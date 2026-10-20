@@ -1,0 +1,22 @@
+.DS_Store
+.worktrees/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+.venv-build/
+build/
+dist/
+# 本地开发用测试数据目录，不含任何真实业务数据，但不应入库
+.devdata/
+instance/
+uploads/
+output/
+*.xlsx
+*.xls
+*.csv
+*.log
+.env
+.env.*
+!.env.example

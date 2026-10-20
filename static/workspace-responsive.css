@@ -1,0 +1,328 @@
+/* ==========================================================================
+   响应式与补充样式
+   断点：1100px 收窄栅格 · 820px 侧栏转顶栏 · 560px 移动端
+   ========================================================================== */
+
+/* 校验错误高亮：让出错区块在长表单里能被一眼定位 */
+.tab-panel.invalid,
+.band.invalid {
+  outline: 2px solid var(--error-500);
+  outline-offset: 3px;
+}
+
+/* 中等屏：四列降为两列，避免输入框过窄 */
+@media (max-width: 1100px) {
+  .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .version-picker label { min-width: 200px; }
+}
+
+@media (max-width: 820px) {
+  .app-shell { grid-template-columns: minmax(0, 1fr); }
+
+  /* 侧栏转顶栏：品牌与导航同行，横向铺开 */
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .brand { padding: 0; }
+
+  .main-nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--sp-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .main-nav::-webkit-scrollbar { display: none; }
+
+  .main-nav button {
+    justify-content: center;
+    min-width: 0;
+    padding: 8px var(--sp-1);
+    font-size: var(--fs-helper);
+    text-align: center;
+    box-shadow: inset 0 -2px 0 transparent;
+  }
+
+  .main-nav button.active { box-shadow: inset 0 -2px 0 var(--primary-500); }
+
+  /* 序号在窄屏隐藏，腾出空间给文字 */
+  .main-nav button span { display: none; }
+
+  .offline {
+    margin-top: 0;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .workspace {
+    min-width: 0;
+    max-width: 100%;
+    padding: var(--sp-6) var(--sp-4) var(--sp-8);
+  }
+
+  .page > header,
+  .policy-head {
+    display: block;
+  }
+
+  .version-picker {
+    margin-top: var(--sp-4);
+    flex-wrap: wrap;
+  }
+
+  .version-picker label { min-width: 0; flex: 1 1 200px; }
+
+  .grid.four,
+  .grid.three,
+  .grid.two,
+  .checks,
+  .fieldset-row,
+  .uploads { grid-template-columns: 1fr; }
+
+  .band,
+  .version-bar { padding: var(--sp-5); }
+
+  /* 使用说明：窄屏收紧内边距，长文更好读 */
+  .guide-step { padding: var(--sp-5); }
+
+  .guide-lead { padding: var(--sp-4); }
+
+  .faq > summary,
+  .faq-body { padding-left: var(--sp-4); padding-right: var(--sp-4); }
+
+  .guide-note { padding: var(--sp-4); }
+
+  .guide-table tbody td:first-child { width: auto; }
+
+  /* 窄屏下长字段名（如 current_special_deductions）允许断行，别把列表撑出屏幕 */
+  .guide-step code,
+  .faq-body code,
+  .guide-note code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* 表格在窄屏必然需要横滑，给出明确的视觉提示。
+
+     实现要点（这两处踩过坑，勿改）：
+     1) 必须用 `background` 简写而非 `background-image`——后者不接受
+        `100% 0` 这样的位置后缀，一处非法会让整条声明被丢弃。
+     2) 层序：靠前 = 靠上。四层自上而下为「遮罩 ×2 → 阴影 ×2」，
+        阴影必须放在遮罩之下，否则任何滚动位置都看不见。
+     3) attachment：遮罩用 local（随内容滚动），阴影用 scroll（钉在容器两端）。 */
+  .table-wrap {
+    position: relative;
+    background:
+      linear-gradient(90deg, var(--bg-surface) 30%, rgba(255, 255, 255, 0)) 0 0,
+      linear-gradient(90deg, rgba(255, 255, 255, 0), var(--bg-surface) 70%) 100% 0,
+      radial-gradient(farthest-side at 0 50%, rgba(26, 40, 70, 0.16), rgba(26, 40, 70, 0)) 0 0,
+      radial-gradient(farthest-side at 100% 50%, rgba(26, 40, 70, 0.16), rgba(26, 40, 70, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-size: 44px 100%, 44px 100%, 13px 100%, 13px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  .version-bar { display: block; }
+
+  .version-bar .buttons { margin-top: var(--sp-5); }
+
+  .required-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .required-summary .progress-wrap,
+  .progress-track {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* 弹窗在窄屏贴底展开，更接近移动端表单习惯 */
+  dialog {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: calc(100vh - 32px);
+    margin: auto auto 0;
+    border-radius: var(--r-dialog) var(--r-dialog) 0 0;
+  }
+
+  dialog > form { max-height: calc(100vh - 32px); }
+
+  /* 按钮在窄屏撑满，热区更大 */
+  .actions button { flex: 1 1 132px; }
+
+  .buttons .ghost:last-child:not(:only-child) { margin-left: 0; }
+}
+
+@media (max-width: 560px) {
+  .required-summary { padding-left: 0; padding-right: 0; }
+
+  #policy-completion,
+  [data-error-for] { max-width: 100%; overflow-wrap: anywhere; }
+
+  /* 移动端规则 Tab 两列铺排，避免文字被裁切 */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: 0;
+    margin-right: 0;
+    padding: var(--sp-1);
+    overflow: visible;
+  }
+
+  .tabs button {
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
+    padding: 7px var(--sp-2);
+  }
+
+  .page h1 { font-size: 21px; }
+
+  .band,
+  .version-bar { padding: var(--sp-4); }
+
+  .section-row { align-items: flex-start; }
+
+  .steps li { padding: var(--sp-4) var(--sp-4) var(--sp-4) 52px; }
+
+  .steps li::before { left: var(--sp-4); top: var(--sp-4); }
+
+  dialog header,
+  dialog .grid,
+  dialog > form > p,
+  dialog footer { padding-left: var(--sp-4); padding-right: var(--sp-4); }
+
+  dialog footer { flex-wrap: wrap; }
+
+  dialog footer button { flex: 1 1 120px; }
+}
+
+/* 打印时去掉交互外壳，只留内容 */
+@media print {
+  .sidebar,
+  .tabs,
+  .actions,
+  .buttons,
+  .section-row button { display: none; }
+
+  body { background: #fff; }
+
+  .app-shell { grid-template-columns: 1fr; }
+
+  .band { break-inside: avoid; box-shadow: none; }
+}
+
+/* 尊重系统的减少动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高对比度偏好：加强边框 */
+@media (prefers-contrast: more) {
+  :root {
+    --border-subtle: var(--gray-400);
+    --border-default: var(--gray-500);
+    --text-secondary: var(--gray-700);
+    --text-tertiary: var(--gray-600);
+  }
+}
+
+/* 深色模式：独立 Token，不用简单反转 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: #12151a;
+    --bg-surface: #1a1e25;
+    --bg-subtle: #21262f;
+    --bg-sunken: #161a20;
+    --border-subtle: #2c323d;
+    --border-default: #3d4450;
+    --border-strong: #525a68;
+    --text-primary: #e8eaed;
+    --text-secondary: #b0b7c3;
+    --text-tertiary: #8b93a1;
+    --text-disabled: #6b7280;
+
+    --gray-50: #161a20;
+    --gray-100: #21262f;
+    --gray-200: #2c323d;
+    --gray-300: #3d4450;
+    --gray-400: #525a68;
+    --gray-500: #6b7280;
+    --gray-600: #8b93a1;
+    --gray-700: #b0b7c3;
+    --gray-800: #d5d9df;
+    --gray-900: #e8eaed;
+
+    --primary-50: rgba(45, 127, 249, 0.14);
+    --primary-100: rgba(45, 127, 249, 0.2);
+    --primary-200: rgba(45, 127, 249, 0.3);
+    --primary-600: #4a8ff8;
+    --primary-700: #6ba3fa;
+
+    --error-50: rgba(229, 72, 77, 0.14);
+    --error-700: #ff8a8d;
+    --warning-50: rgba(245, 166, 35, 0.14);
+    --warning-700: #ffc76b;
+    --success-50: rgba(48, 164, 108, 0.14);
+    --success-700: #5fc495;
+    --info-50: rgba(45, 127, 249, 0.14);
+    --info-700: #7fb0fb;
+
+    /* 暗色下阴影几乎不可见，靠边界线 + 更亮表面分层 */
+    --shadow-xs: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 40px rgba(0, 0, 0, 0.6);
+
+    --focus-ring: 0 0 0 3px rgba(74, 143, 248, 0.28);
+  }
+
+  .brand b { background: linear-gradient(135deg, #4a8ff8, #1f6fe5); }
+
+  .tabs button:hover:not(.active) { background: rgba(255, 255, 255, 0.06); }
+
+  tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+
+  tbody tr:hover { background: rgba(45, 127, 249, 0.1); }
+
+  label.upload { background: var(--bg-sunken); }
+
+  fieldset { background: var(--bg-sunken); }
+
+  dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+
+  /* 暗色下别让日期控件的原生图标消失 */
+  input[type="date"], input[type="time"], input[type="month"] {
+    color-scheme: dark;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%238b93a1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
+/* 强制色彩模式（Windows 高对比度） */
+@media (forced-colors: active) {
+  .tabs button.active,
+  button.primary { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+
+  .main-nav button.active { forced-color-adjust: none; }
+
+  .progress-track > i { background: Highlight; }
+}

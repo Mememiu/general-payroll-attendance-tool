@@ -1,0 +1,1 @@
+"""Runtime-generated input templates."""
